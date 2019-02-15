@@ -2,9 +2,25 @@
   "name": "psi-profiler-tool",
   "version": "0.0.3",
   "description": "Profile your url with lighthouse",
+  "keywords": [
+    "webpack",
+    "SSR",
+    "server-side rendered",
+    "rendering",
+    "middleware",
+    "express",
+    "react"
+  ],
   "main": "lib/index.js",
-  "repository": "git@github.com:verydanny/lighthouse.git",
+  "files": [
+    "lib"
+  ],
+  "repository": "https://github.com/verydanny/lighthouse",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
+  "homepage": "http://www.verydanny.com/",
+  "bugs": {
+    "url": "https://github.com/verydanny/lighthouse/issues"
+  },
   "license": "MIT",
   "private": false,
   "scripts": {
