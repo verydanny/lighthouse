@@ -1,0 +1,27 @@
+{
+  "name": "psi-profiler-tool",
+  "version": "0.0.3",
+  "description": "Profile your url with lighthouse",
+  "main": "lib/index.js",
+  "repository": "git@github.com:verydanny/lighthouse.git",
+  "author": "Daniil Veremchuk <daniel@verydanny.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "tsc": "tsc",
+    "prepublish": "tsc"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/isomorphic-fetch": "^0.0.35",
+    "@types/lodash": "^4.14.121",
+    "@types/node": "^11.9.4",
+    "@types/ramda": "types/npm-ramda#dist",
+    "typescript": "^3.3.3"
+  },
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.17.11",
+    "ramda": "^0.26.1"
+  }
+}
