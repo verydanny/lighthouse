@@ -138,4 +138,7 @@ async function lighthouseRunner<T extends any[]>({
   return results
 }
 
-export = lighthouseRunner
+export default lighthouseRunner
+
+// Support nodeJs too
+module.exports = lighthouseRunner

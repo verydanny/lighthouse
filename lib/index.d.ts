@@ -15,4 +15,4 @@ interface IOptions {
  * @param {array} urls - List of urls to provide the runner...
  */
 declare function lighthouseRunner<T extends any[]>({ runs, wait, view, api, verbose, }: IOptions, ...urls: T): Promise<{}>;
-export = lighthouseRunner;
+export default lighthouseRunner;
