@@ -21,14 +21,31 @@
   "private": false,
   "scripts": {
     "tsc": "tsc",
-    "prepublish": "tsc"
+    "prepublish": "tsc",
+    "build": "babel src -d lib --delete-dir-on-start --extensions [.es6,.js,.es,.jsx,.mjs,.ts,.tsx] -s",
+    "watch": "babel --watch src -d lib --delete-dir-on-start --extensions [.es6,.js,.es,.jsx,.mjs,.ts,.tsx]",
+    "lint": "tslint --fix -p ."
   },
+  "bin": "lib/bin.js",
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/plugin-proposal-class-properties": "^7.3.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "@babel/plugin-transform-modules-commonjs": "^7.2.0",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-typescript": "^7.3.3",
     "@types/chalk": "^2.2.0",
     "@types/isomorphic-fetch": "^0.0.35",
     "@types/lodash": "^4.14.121",
     "@types/node": "^11.9.4",
     "@types/ramda": "types/npm-ramda#dist",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.14.0",
+    "prettier": "^1.16.4",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-import-group-ordering": "^2.1.1",
     "typescript": "^3.3.3"
   },
   "dependencies": {

@@ -1,0 +1,40 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-config-prettier",
+    "tslint-import-group-ordering"
+  ],
+  "rules": {
+    "interface-name": false,
+    "member-access": false,
+    "no-submodule-imports": false,
+    "object-literal-sort-keys": false,
+    "no-console": false,
+    "import-group-ordering": {
+      "severity": "error",
+      "options": {
+        "imports-groups": [
+          {
+            "name": "dependencies"
+          },
+          {
+            "name": "app"
+          }
+        ],
+        "matching-rules": [
+          {
+            "type": "dependencies",
+            "imports-group": "dependencies",
+            "disable-native-nodejs-modules": true,
+            "from-package.json": true
+          },
+          {
+            "type": "project",
+            "matches": ".*",
+            "imports-group": "app"
+          }
+        ]
+      }
+    }
+  }
+}

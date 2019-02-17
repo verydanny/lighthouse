@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "esnext",
     "module": "commonjs",
     "declaration": true,
+    "emitDeclarationOnly": true,
     "moduleResolution": "node",
+    "baseUrl": "src",
     "outDir": "lib",
     "strict": true,
     "noUnusedLocals": true,    

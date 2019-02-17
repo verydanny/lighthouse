@@ -1,7 +1,7 @@
-import flatten from 'ramda/src/flatten'
-import { pipe, map, fill, pick, getOr } from 'lodash/fp'
-import fetch from 'isomorphic-fetch'
 import chalk from 'chalk'
+import fetch from 'isomorphic-fetch'
+import { fill, getOr, map, pick, pipe } from 'lodash/fp'
+import flatten from 'ramda/src/flatten'
 
 interface IOptions {
   runs: number,
@@ -21,8 +21,9 @@ function makeId() {
   let text: string = ''
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < 5; i++)
+  for (let i = 0; i < 6; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length))
+  }
 
   return text
 }
@@ -77,7 +78,9 @@ async function psiApiFetch(url: string, waitAmount: number, verbose: boolean) {
         )(base),
       }), {})
 
-      verbose && console.table(result)
+      if (verbose) {
+        console.table(result)
+      }
 
       await wait(waitAmount)
 
@@ -96,10 +99,12 @@ async function getResults<T extends string[]>(arr: T, waitAmount: number, api: s
     const apiKey = api !== '' ? `&key=${api}` : ''
     const fakeUrlChange = `${curr}${apiKey}&${makeId()}=${makeId()}`
 
-    verbose && console.log(
-      chalk.red(`Test #${index + 1}`),
-      chalk.black.bgGreen(`Currently Running: ${curr}`)
-    )
+    if (verbose) {
+      console.log(
+        chalk.red(`Test #${index + 1}`),
+        chalk.black.bgGreen(`Currently Running: ${curr}`)
+      )
+    }
 
     return ({
       ...collection,
@@ -127,7 +132,12 @@ async function lighthouseRunner<T extends any[]>({
   // normalize runs for later
   runs = runs * urls.length
 
-  verbose && console.log(`Runs: ${runs}\nWaiting: ${wait}\nTesting View: ${view}`)
+  if (verbose) {
+    console.log(
+      `Runs: ${runs}\nWaiting: ${wait}\nTesting View: ${view}`
+    )
+  }
+
   const results = await getResults(
     createArr({ runs, view, urls }),
     wait,
@@ -139,6 +149,3 @@ async function lighthouseRunner<T extends any[]>({
 }
 
 export default lighthouseRunner
-
-// Support nodeJs too
-module.exports = lighthouseRunner
