@@ -5,9 +5,9 @@ import { fill, getOr, map, pick, pipe } from 'lodash/fp'
 import flatten from 'ramda/src/flatten'
 
 export interface IOptions {
-  runs: number,
-  wait: number,
-  view: 'mobile' | 'both' | 'desktop',
+  runs?: number,
+  wait?: number,
+  view?: 'mobile' | 'both' | 'desktop',
   api?: string,
   verbose?: boolean,
 }
@@ -129,13 +129,19 @@ async function getResults<T extends string[]>(arr: T, waitAmount: number, api: s
 }
 
 /**
- * @param {Object} options - `Object { runs, wait, view, api, verbose }`
- * @param {number} options.runs - How many times to run PSI test on list of urls...
- * @param {number} options.wait - How many ms to wait before running next test...
- * @param {string} [options.view=both] - Which view to run tests for: `mobile, desktop, both`...
- * @param {string} [options.api=''] - Google API key
- * @param {boolean} [options.verbose] - Output console.log after every test...
+ * 
+ * @typedef {Object} Options
+ * @property {number} runs - How many times to run PSI test on list of urls...
+ * @property {number} wait - How many ms to wait before running next test (useful if no api key)...
+ * @property {('mobile'|'desktop'|'both')} view - Which view to run tests for...
+ * @property {string} api - Google API key
+ * @property {boolean} verbose - Output console.log after every test...
+ */
+
+/**
+ * @param {...Options} options - `Object { runs, wait, view, api, verbose }`
  * @param {array} urls - List of urls to provide the runner...
+ * @returns {Promise} promise
  */
 export default async function profiler<T extends any[]>({
   runs = 1,
@@ -144,7 +150,8 @@ export default async function profiler<T extends any[]>({
   api = '',
   verbose = false,
 }: IOptions, ...urls: T) {
-  // normalize runs for later
+  // normalize runs for later, array of all tests is
+  // how many runs * how many urls to test
   runs = runs * urls.length
 
   if (verbose) {
