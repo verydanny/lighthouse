@@ -5,29 +5,26 @@ import { fill, getOr, map, pick, pipe } from 'lodash/fp'
 import flatten from 'ramda/src/flatten'
 
 export interface IOptions {
-  runs?: number,
-  wait?: number,
-  view?: 'mobile' | 'both' | 'desktop',
-  api?: string,
-  verbose?: boolean,
+  runs?: number
+  wait?: number
+  view?: 'mobile' | 'both' | 'desktop'
+  api?: string
+  verbose?: boolean
 }
 
 interface ICreateArr<T> {
-  runs: number,
-  view: IOptions['view'],
-  urls: T[],
+  runs: number
+  view: IOptions['view']
+  urls: T[]
 }
 
 function makeId() {
   let text: string = ''
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
   for (let i = 0; i < 6; i++) {
-    text += possible.charAt(
-      Math.floor(
-        Math.random() * possible.length
-      )
-    )
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
   }
 
   return text
@@ -35,8 +32,11 @@ function makeId() {
 
 const createArr = <T extends any[]>({ runs, view, urls }: ICreateArr<T>) => {
   const viewRuns =
-    view === 'both' ? ['desktop', 'mobile']
-    : view === 'mobile' ? ['mobile'] : ['desktop']
+    view === 'both'
+      ? ['desktop', 'mobile']
+      : view === 'mobile'
+      ? ['mobile']
+      : ['desktop']
 
   return pipe(
     fill(0, runs, urls),
@@ -46,19 +46,21 @@ const createArr = <T extends any[]>({ runs, view, urls }: ICreateArr<T>) => {
   )(Array(runs))
 }
 
-export async function psiApiFetch(url: string, waitAmount: number, verbose: boolean) {
+export async function psiApiFetch(
+  url: string,
+  waitAmount: number,
+  verbose: boolean
+) {
   const wait = (ms: number) => new Promise(res => setTimeout(res, ms))
 
   return new Promise(async (res, rej) => {
     try {
-      const resolve = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}`)
+      const resolve = await fetch(
+        `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}`
+      )
       const json = await resolve.json()
 
-      if (
-        json &&
-        json.lighthouseResult &&
-        json.lighthouseResult.audits
-      ) {
+      if (json && json.lighthouseResult && json.lighthouseResult.audits) {
         const base = json.lighthouseResult
         const auditConstants = ['score', 'displayValue']
         const auditList = {
@@ -73,63 +75,69 @@ export async function psiApiFetch(url: string, waitAmount: number, verbose: bool
           'audits.estimated-input-latency| Estimated Input Latency:': null,
           'audits.bootup-time| JS Bootup Time:': null,
           'audits.total-byte-weight| Total Byte Weight:': null,
-          'audits.mainthread-work-breakdown| Main Thread Work Time:': null,
+          'audits.mainthread-work-breakdown| Main Thread Work Time:': null
         }
-  
-        const result = Object.keys(auditList).reduce((auditResult, key) => ({
-          ...auditResult,
-          [key.split('|')[1]]: pipe(
-            getOr('Data not found', key.split('|')[0]),
-            pick(auditConstants),
-          )(base),
-        }), {})
-  
+
+        const result = Object.keys(auditList).reduce(
+          (auditResult, key) => ({
+            ...auditResult,
+            [key.split('|')[1]]: pipe(
+              getOr('Data not found', key.split('|')[0]),
+              pick(auditConstants)
+            )(base)
+          }),
+          {}
+        )
+
         if (verbose) {
           console.table(result)
         }
-  
+
         await wait(waitAmount)
-  
+
         res(result)
       } else if (json.error && json.error.message) {
-        console.log(
-          chalk.bold.red('ERROR:'),
-          json.error.message
-        )
+        console.log(chalk.bold.red('ERROR:'), json.error.message)
       } else {
         console.log(
           chalk.bold.yellow('WARNING:'),
           'Something went wrong, try using a different URL, or add more repeat runs.'
         )
       }
-    } catch(e) {
+    } catch (e) {
       rej(e)
     }
   })
 }
 
-async function getResults<T extends string[]>(arr: T, waitAmount: number, api: string, verbose: boolean) {
+async function getResults<T extends string[]>(
+  arr: T,
+  waitAmount: number,
+  api: string,
+  verbose: boolean
+) {
   return arr.reduce(async (previous, curr, index) => {
     const collection = await previous
     const apiKey = api !== '' ? `&key=${api}` : ''
     const fakeUrlChange = `${curr}${apiKey}&${makeId()}=${makeId()}`
 
     if (verbose) {
-      console.log(
-        chalk.bold.green(`Test #${index + 1}`),
-        `${curr}`
-      )
+      console.log(chalk.bold.green(`Test #${index + 1}`), `${curr}`)
     }
 
-    return ({
+    return {
       ...collection,
-      [`${curr}-${index}`]: await psiApiFetch(fakeUrlChange, waitAmount, verbose),
-    })
+      [`${curr}-${index}`]: await psiApiFetch(
+        fakeUrlChange,
+        waitAmount,
+        verbose
+      )
+    }
   }, {})
 }
 
 /**
- * 
+ *
  * @typedef {Object} Options
  * @property {number} runs - How many times to run PSI test on list of urls...
  * @property {number} wait - How many ms to wait before running next test (useful if no api key)...
@@ -143,13 +151,10 @@ async function getResults<T extends string[]>(arr: T, waitAmount: number, api: s
  * @param {array} urls - List of urls to provide the runner...
  * @returns {Promise} promise
  */
-export default async function profiler<T extends any[]>({
-  runs = 1,
-  wait = 2000,
-  view = 'both',
-  api = '',
-  verbose = false,
-}: IOptions, ...urls: T) {
+export default async function profiler<T extends any[]>(
+  { runs = 1, wait = 2000, view = 'both', api = '', verbose = false }: IOptions,
+  ...urls: T
+) {
   // normalize runs for later, array of all tests is
   // how many runs * how many urls to test
   runs = runs * urls.length

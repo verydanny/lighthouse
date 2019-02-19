@@ -24,7 +24,8 @@
     "publish": "yarn build && yarn tsc",
     "build": "babel src -d lib --delete-dir-on-start --ignore src/**/*.d.ts --extensions [.es6,.js,.es,.jsx,.mjs,.ts,.tsx] -s",
     "watch": "babel --watch src -d lib --delete-dir-on-start --ignore src/**/*.d.ts src/**/*.d.ts --extensions [.es6,.js,.es,.jsx,.mjs,.ts,.tsx]",
-    "lint": "tslint --fix -p ."
+    "lint": "tslint --fix -p .",
+    "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
   "bin": {
     "psi-profiler": "lib/profiler.js"
@@ -44,10 +45,13 @@
     "@types/ramda": "types/npm-ramda#dist",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.14.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "prettier": "^1.16.4",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-import-group-ordering": "^2.1.1",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.3"
   },
   "dependencies": {
