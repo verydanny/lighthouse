@@ -6,8 +6,8 @@
 
 ## Table of Contents
 1. [Basic Usage](#basic-usage)
-2. [Api](#Api)  
-3. [Cli](#Cli)
+2. [Api](#api)  
+3. [Cli](#cli)
 
 <h2 align="center">Basic Usage</h2>
 
@@ -47,7 +47,7 @@ async function getReport() {
 Returns a `Promise` for the response data
 
 #### options
----
+
 #### runs
 Type: `number`
 
