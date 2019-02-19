@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import { stripIndents } from 'common-tags'
 import fetch from 'isomorphic-fetch'
 import { fill, getOr, map, pick, pipe } from 'lodash/fp'
 import flatten from 'ramda/src/flatten'
@@ -48,53 +49,63 @@ const createArr = <T extends any[]>({ runs, view, urls }: ICreateArr<T>) => {
 export async function psiApiFetch(url: string, waitAmount: number, verbose: boolean) {
   const wait = (ms: number) => new Promise(res => setTimeout(res, ms))
 
-  try {
-    const res = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}`)
-    const json = await res.json()
+  return new Promise(async (res, rej) => {
+    try {
+      const resolve = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}`)
+      const json = await resolve.json()
 
-    if (
-      json &&
-      json.lighthouseResult &&
-      json.lighthouseResult.audits
-    ) {
-      const base = json.lighthouseResult
-      const auditConstants = ['score', 'displayValue']
-      const auditList = {
-        'categories.performance| Final Score:': null,
-        'audits.interactive| TTI:': null,
-        'audits.speed-index| Speed Index:': null,
-        'audits.first-contentful-paint| First Contentful Paint:': null,
-        'audits.first-cpu-idle| CPU Idle:': null,
-        'audits.first-meaningful-paint| Meaningful Paint:': null,
-        'audits.time-to-first-byte| Time To First Byte (TTFB):': null,
-        'audits.uses-long-cache-ttl| Uses Long Cache TTL:': null,
-        'audits.estimated-input-latency| Estimated Input Latency:': null,
-        'audits.bootup-time| JS Bootup Time:': null,
-        'audits.total-byte-weight| Total Byte Weight:': null,
-        'audits.mainthread-work-breakdown| Main Thread Work Time:': null,
+      if (
+        json &&
+        json.lighthouseResult &&
+        json.lighthouseResult.audits
+      ) {
+        const base = json.lighthouseResult
+        const auditConstants = ['score', 'displayValue']
+        const auditList = {
+          'categories.performance| Final Score:': null,
+          'audits.interactive| TTI:': null,
+          'audits.speed-index| Speed Index:': null,
+          'audits.first-contentful-paint| First Contentful Paint:': null,
+          'audits.first-cpu-idle| CPU Idle:': null,
+          'audits.first-meaningful-paint| Meaningful Paint:': null,
+          'audits.time-to-first-byte| Time To First Byte (TTFB):': null,
+          'audits.uses-long-cache-ttl| Uses Long Cache TTL:': null,
+          'audits.estimated-input-latency| Estimated Input Latency:': null,
+          'audits.bootup-time| JS Bootup Time:': null,
+          'audits.total-byte-weight| Total Byte Weight:': null,
+          'audits.mainthread-work-breakdown| Main Thread Work Time:': null,
+        }
+  
+        const result = Object.keys(auditList).reduce((auditResult, key) => ({
+          ...auditResult,
+          [key.split('|')[1]]: pipe(
+            getOr('Data not found', key.split('|')[0]),
+            pick(auditConstants),
+          )(base),
+        }), {})
+  
+        if (verbose) {
+          console.table(result)
+        }
+  
+        await wait(waitAmount)
+  
+        res(result)
+      } else if (json.error && json.error.message) {
+        console.log(
+          chalk.bold.red('ERROR:'),
+          json.error.message
+        )
+      } else {
+        console.log(
+          chalk.bold.yellow('WARNING:'),
+          'Something went wrong, try using a different URL, or add more repeat runs.'
+        )
       }
-
-      const result = Object.keys(auditList).reduce((auditResult, key) => ({
-        ...auditResult,
-        [key.split('|')[1]]: pipe(
-          getOr('Data not found', key.split('|')[0]),
-          pick(auditConstants),
-        )(base),
-      }), {})
-
-      if (verbose) {
-        console.table(result)
-      }
-
-      await wait(waitAmount)
-
-      return result
+    } catch(e) {
+      rej(e)
     }
-
-    return 'Failed to get data'
-  } catch (e) {
-    throw Error(e)
-  }
+  })
 }
 
 async function getResults<T extends string[]>(arr: T, waitAmount: number, api: string, verbose: boolean) {
@@ -105,8 +116,8 @@ async function getResults<T extends string[]>(arr: T, waitAmount: number, api: s
 
     if (verbose) {
       console.log(
-        chalk.red(`Test #${index + 1}`),
-        chalk.black.bgGreen(`Currently Running: ${curr}`)
+        chalk.bold.green(`Test #${index + 1}`),
+        `${curr}`
       )
     }
 
@@ -137,9 +148,11 @@ export default async function profiler<T extends any[]>({
   runs = runs * urls.length
 
   if (verbose) {
-    console.log(
-      `Runs: ${runs}\nWaiting: ${wait}\nTesting View: ${view}`
-    )
+    console.log(stripIndents`
+      Runs: ${chalk.bold.yellow(runs.toString())}
+      Waiting: ${chalk.bold.yellow(wait.toString())}
+      Testing View: ${chalk.bold.yellow(view)}
+    `)
   }
 
   const results = await getResults(
@@ -152,4 +165,5 @@ export default async function profiler<T extends any[]>({
   return results
 }
 
+// I want CommonJS primary import to be profiler
 module.exports = profiler
