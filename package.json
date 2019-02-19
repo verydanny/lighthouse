@@ -1,6 +1,6 @@
 {
   "name": "psi-profiler-tool",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Profile your url with lighthouse",
   "keywords": [
     "google",
@@ -26,7 +26,9 @@
     "watch": "babel --watch src -d lib --delete-dir-on-start --ignore *.d.ts src/**/*.d.ts --extensions [.es6,.js,.es,.jsx,.mjs,.ts,.tsx]",
     "lint": "tslint --fix -p ."
   },
-  "bin": "lib/profiler.js",
+  "bin": {
+    "psi-profiler": "lib/profiler.js"
+  },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.3",
