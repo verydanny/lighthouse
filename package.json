@@ -1,6 +1,6 @@
 {
   "name": "psi-profiler-tool",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "description": "Profile your url with lighthouse",
   "keywords": [
     "google",
