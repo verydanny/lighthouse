@@ -39,7 +39,7 @@ function isNumber(n: string | number) {
 async function processUrl(url: string) {
   const options: IOptions = {
     runs: 1,
-    wait: 0,
+    wait: 1000,
     view: 'both',
     verbose: true,
   }
