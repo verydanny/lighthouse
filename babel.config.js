@@ -15,7 +15,8 @@ module.exports = function(api) {
     '@babel/proposal-class-properties',
     '@babel/proposal-object-rest-spread',
     ['@babel/plugin-transform-modules-commonjs', {
-      loose: true
+      loose: true,
+      strict: true
     }]
   ]
 

@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch'
 import { fill, getOr, map, pick, pipe } from 'lodash/fp'
 import flatten from 'ramda/src/flatten'
 
-interface IOptions {
+export interface IOptions {
   runs: number,
   wait: number,
   view: 'mobile' | 'both' | 'desktop',
@@ -19,10 +19,14 @@ interface ICreateArr<T> {
 
 function makeId() {
   let text: string = ''
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
   for (let i = 0; i < 6; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length))
+    text += possible.charAt(
+      Math.floor(
+        Math.random() * possible.length
+      )
+    )
   }
 
   return text
@@ -30,8 +34,8 @@ function makeId() {
 
 const createArr = <T extends any[]>({ runs, view, urls }: ICreateArr<T>) => {
   const viewRuns =
-    view === 'both' ? ['desktop', 'mobile'] :
-      view === 'mobile' ? ['mobile'] : ['desktop']
+    view === 'both' ? ['desktop', 'mobile']
+    : view === 'mobile' ? ['mobile'] : ['desktop']
 
   return pipe(
     fill(0, runs, urls),
@@ -41,7 +45,7 @@ const createArr = <T extends any[]>({ runs, view, urls }: ICreateArr<T>) => {
   )(Array(runs))
 }
 
-async function psiApiFetch(url: string, waitAmount: number, verbose: boolean) {
+export async function psiApiFetch(url: string, waitAmount: number, verbose: boolean) {
   const wait = (ms: number) => new Promise(res => setTimeout(res, ms))
 
   try {
@@ -114,7 +118,7 @@ async function getResults<T extends string[]>(arr: T, waitAmount: number, api: s
 }
 
 /**
- * @param {Object} options
+ * @param {Object} options - `Object { runs, wait, view, api, verbose }`
  * @param {number} options.runs - How many times to run PSI test on list of urls...
  * @param {number} options.wait - How many ms to wait before running next test...
  * @param {string} [options.view=both] - Which view to run tests for: `mobile, desktop, both`...
@@ -122,7 +126,7 @@ async function getResults<T extends string[]>(arr: T, waitAmount: number, api: s
  * @param {boolean} [options.verbose] - Output console.log after every test...
  * @param {array} urls - List of urls to provide the runner...
  */
-async function lighthouseRunner<T extends any[]>({
+export default async function profiler<T extends any[]>({
   runs = 1,
   wait = 2000,
   view = 'both',
@@ -148,4 +152,4 @@ async function lighthouseRunner<T extends any[]>({
   return results
 }
 
-export default lighthouseRunner
+module.exports = profiler
