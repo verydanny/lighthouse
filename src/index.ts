@@ -98,6 +98,8 @@ export async function psiApiFetch(
         res(result)
       } else if (json.error && json.error.message) {
         console.log(chalk.bold.red('ERROR:'), json.error.message)
+
+        res('Error')
       } else {
         console.log(
           chalk.bold.yellow('WARNING:'),
