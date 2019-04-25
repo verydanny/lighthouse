@@ -1,6 +1,6 @@
 {
   "name": "psi-profiler-tool",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Profile your url with lighthouse",
   "keywords": [
     "google",
@@ -21,7 +21,7 @@
   "private": false,
   "scripts": {
     "tsc": "tsc",
-    "publish": "yarn build && yarn tsc",
+    "prepublish": "yarn build && yarn tsc",
     "build": "babel src -d lib --delete-dir-on-start --ignore src/**/*.d.ts --extensions [.es6,.js,.es,.jsx,.mjs,.ts,.tsx] -s",
     "watch": "babel --watch src -d lib --delete-dir-on-start --ignore src/**/*.d.ts src/**/*.d.ts --extensions [.es6,.js,.es,.jsx,.mjs,.ts,.tsx]",
     "lint": "tslint --fix -p .",
